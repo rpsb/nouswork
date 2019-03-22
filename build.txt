@@ -1,0 +1,24 @@
+#!/bin/sh
+
+JAVA_HOME=/opt/IBM/WebSphere/AppServer/java_1.7_64/; export JAVA_HOME
+MVN_HOME=/home/wasadmin/release/apache-maven-3.5.2; export MVN_HOME
+PATH=$PATH:$JAVA_HOME/bin/:$MVN_HOME/bin/: export PATH
+echo "Build started"
+echo `java -version`
+ABC=Test
+rm -rf /home/wasadmin/release/jenkinsworkspace/$ABC/fdStatic/fdStatic.zip
+rm -rf /home/wasadmin/release/jenkinsworkspace/$ABC/fdxLib/fdxLib.zip
+rm -rf /home/wasadmin/release/jenkinsworkspace/$ABC/fdWeb/fdTemplates.zip
+rm -rf /home/wasadmin/release/jenkinsworkspace/$ABC/fdScriptsCda/fdAppConfigs.zip
+rm -rf /home/wasadmin/release/jenkinsworkspace/$ABC/fdDbProcedures/fdDbProcedures.zip
+
+cd /home/wasadmin/release/jenkinsworkspace/$ABC/fdBrokerage/
+mvn   -fae --settings conf/settings.xml --global-settings conf/settings.xml clean install -U antrun:run  -Dmaven.test.skip=true
+cd /home/wasadmin/release/jenkinsworkspace/$ABC/fdStatic/
+mvn clean install -U antrun:run -fae
+cd /home/wasadmin/release/jenkinsworkspace/$ABC/fdDbProcedures/
+mvn clean install -U antrun:run@default-cli  -fae
+cd /home/wasadmin/release/jenkinsworkspace/$ABC/fdxLib/
+mvn clean install -U antrun:run -fae
+cd /home/wasadmin/release/jenkinsworkspace/$ABC/fdScriptsCda/
+mvn clean install -U antrun:run -fae

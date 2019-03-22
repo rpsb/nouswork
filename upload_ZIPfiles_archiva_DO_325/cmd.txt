@@ -1,0 +1,4 @@
+Specify the credintials of repository in settings.xml of fdBrokerage
+and run the following cmd in fdBrokerage
+
+ mvn deploy:deploy-file   -DgroupId=com.fd.brokerage   -DartifactId=fdStatic   -Dversion=0.0.2   -Dpackaging=zip   -Dfile=/home/wasadmin/release/jenkinsworkspace/FDX_BRN_DEV_8_2_4/fdStatic/target/fdStatic1.zip   -DrepositoryId=ump-staging-local  -Durl=http://10.20.40.165:8080/repository/ump-staging-local/ -s conf/settings.xml --global-settings conf/settings.xml
