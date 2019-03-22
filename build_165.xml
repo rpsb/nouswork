@@ -1,0 +1,85 @@
+<project name="maven-antrun-" basedir=".">
+
+                <property name="SENCHA_HOME" value="/usr/local/Sencha60214/"/>
+                <property name="NODE_NPM" value="/fdx/softwares/node-v10.15.3-linux-x64/bin/npm"/>
+                <target name="sencha" >
+                                                <echo message="SENCHA_HOME is set to = ${SENCHA_HOME}" />
+												
+												
+												
+												
+                           <java jar="${SENCHA_HOME}/sencha.jar" fork="true" dir="portal" failonerror="true" maxmemory="1024m" >
+                                      <arg value="config"/>
+                                      <arg value="-p"/>
+                                      <arg value="build.version=${release}_${build.number}"/>
+                                      <arg value="then"/>
+                                      <arg value="app"/>
+                                      <arg value="build"/>
+                                      <arg value="-e"/>
+                                      <arg value="-c"/>
+                                      <arg value="production"/>
+                           </java>
+        </target>
+
+        <target name="senchatheme" depends = "sencha" >
+                        <exec executable="${SENCHA_HOME}/sencha"
+                                dir="portal/packages/local/fdx-theme" failonerror="true">
+                                   <arg value="package"/>
+                                   <arg value="build"/>
+                        </exec>
+
+                <copy file="portal/packages/local/fdx-theme/build/resources/fdx-theme-all.css" todir="portal/build/production/Portal/resources/" />
+
+
+                <copy todir="portal/build/production/Portal/resources/">
+                                   <fileset dir="portal/packages/local/fdx-theme/build/resources/">
+                                           <include name="fdx-theme-all.css" />
+                                    </fileset>
+                </copy>
+        </target>
+
+       <target name="addBuildVersionToCSSImportsProd">
+               <replaceregexp byline="true" flags="g">
+               <regexp pattern="\.css\'"/>
+               <substitution expression="\.css?v=${release}_${build.number}\'"/>
+               <fileset dir="portal/build/production/Portal/resources">
+               <include name="*-theme-all.css" />
+               </fileset>
+               </replaceregexp>
+       </target>
+
+        <target name="npmcopy">
+            <echo>copying npm build artifacts</echo>
+            <echo message="NODE_NPM is set to = ${NODE_NPM}" />
+                        <mkdir dir="./portal/build/production/ReactApp"/>
+                        <delete dir="./portal/build/production/ReactApp" />
+                        <mkdir dir="./portal/build/production/ReactApp"/>
+                        <exec executable="${NODE_NPM}" dir="./portal/ReactSampleCode" >
+                                <arg value="install"/>
+                        </exec>
+
+                    <exec executable="${NODE_NPM}" dir="./portal/ReactSampleCode" >
+                                <arg value="run"/>
+                                <arg value="build"/>
+                    </exec>
+
+                   <copy todir="./portal/build/production/ReactApp">
+                           <fileset dir="./portal/ReactSampleCode/dist">
+                                        <include name="**/*.*" />
+                           </fileset>
+           </copy>
+
+        </target>
+
+                 <target name="createWeb" depends = "sencha,senchatheme,addBuildVersionToCSSImportsProd,npmcopy" description="create web project" >
+
+        <!--    <delete includeEmptyDirs="true">
+                                <fileset dir="./portal/fdxReactModules/node_modules"/>
+                        </delete>
+        -->
+                <zip destfile="./target/fdStatic.zip">
+                    <zipfileset dir="${basedir}" includes="**/**.*" excludes="**/portal/**,**/node_modules/**"/>
+                    <zipfileset dir="${basedir}" includes="**/portal/build/production/**"/>
+                </zip>
+        </target>
+</project>
