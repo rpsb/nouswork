@@ -1,1 +1,22 @@
+##: Set the baseline version
+
 flyway -baselineVersion=8.2.4 baseline
+
+##: migrate a particular file
+
+flyway migrate -target=1.2.3
+
+##: cmd to run a script in mysql DB
+mysql -uroot -padmin demo < "D:\work_nous\New folder\FDX_BRN_DEV_8_2_4\insertp2.sql"
+
+
+
+
+1. start from golden DB, 
+2. baseline version
+3. Automate DB using flyway
+
+Mysql dump command
+
+
+
